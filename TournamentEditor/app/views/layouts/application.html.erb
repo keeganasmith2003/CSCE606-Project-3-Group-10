@@ -9,9 +9,14 @@
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-background">
+    <%= render 'partials/topbar' %>
+    <div class="flex h-screen pt-20">
+      <%= render 'partials/sidebar' %>
+      <main class="flex-1 overflow-auto">
+        <%= yield %>
+      </main>
+      <!-- TODO: Replace this with the actual bracket partial when it is fully defined -->
+    </div>
   </body>
 </html>
