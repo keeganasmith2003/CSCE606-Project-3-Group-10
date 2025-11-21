@@ -3,4 +3,7 @@ Rails.application.routes.draw do
 
   # TODO: Replace this route with the actual root
   root 'style#index'
+
+  # Style Guide route
+  get 'style', to: 'style#index'
 end

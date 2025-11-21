@@ -1,6 +1,12 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative "../config/environment"
 require "rails/test_help"
+require "capybara/rails"
+require "capybara/minitest"
+
+Capybara.default_driver = :selenium
+Capybara.javascript_driver = :selenium_chrome
+Capybara.default_max_wait_time = 5
 
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers

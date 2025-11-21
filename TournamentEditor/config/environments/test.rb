@@ -51,6 +51,14 @@ Rails.application.configure do
   # Tell Active Support which deprecation messages to disallow.
   config.active_support.disallowed_deprecation_warnings = []
 
+  # Enable asset compilation in test environment for Tailwind CSS
+  # This ensures the built tailwind.css from app/assets/builds is served correctly
+  config.assets.compile = true
+  config.assets.digest = false
+  
+  # Disable SASS processing for CSS files to prevent errors with built Tailwind CSS
+  config.assets.css_compressor = nil
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
