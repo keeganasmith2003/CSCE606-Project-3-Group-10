@@ -42,12 +42,21 @@ group :development do
   # Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
   # gem 'rack-mini-profiler', '~> 2.0' # not yet packaged for Debian
   gem 'listen', '~> 3.3'
+  #rspec
+  gem 'rspec-rails', '~> 6.1.0'
+  gem 'factory_bot_rails', '~> 6.4'
+  gem 'faker', '~> 3.2'
+
 end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 3.26'
   gem 'selenium-webdriver', '>= 4.0.0.rc1'
+  ##for rspec
+  gem 'shoulda-matchers', '~> 6.0'
+  gem 'rails-controller-testing', '~> 1.0'
+  gem 'database_cleaner-active_record', '~> 2.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
