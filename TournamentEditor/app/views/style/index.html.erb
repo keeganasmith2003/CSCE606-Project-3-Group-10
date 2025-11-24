@@ -1,0 +1,287 @@
+<div class="min-h-screen bg-background text-foreground p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">Tailwind CSS Style Guide</h1>
+      <p class="text-muted-foreground">Complete showcase of all custom styles from application.tailwind.css</p>
+      <button 
+        id="darkModeToggle" 
+        class="mt-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition"
+      >
+        Toggle Dark Mode
+      </button>
+    </div>
+
+    <!-- Background & Foreground -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Background & Foreground</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-background border border-border rounded-lg p-4">
+          <p class="text-foreground font-semibold mb-2">Background Color</p>
+          <code class="text-sm text-muted-foreground">bg-background text-foreground</code>
+        </div>
+        <div class="bg-foreground text-background rounded-lg p-4">
+          <p class="font-semibold mb-2">Foreground Color (inverted)</p>
+          <code class="text-sm opacity-80">bg-foreground text-background</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card Styles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Card Styles</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-card text-card-foreground border border-border rounded-lg p-6 shadow-sm">
+          <h3 class="font-semibold mb-2">Card</h3>
+          <p class="text-sm text-muted-foreground">bg-card text-card-foreground</p>
+        </div>
+        <div class="bg-card text-card-foreground border-2 border-border rounded-lg p-6 shadow-md">
+          <h3 class="font-semibold mb-2">Card with Border</h3>
+          <p class="text-sm text-muted-foreground">border-2 border-border</p>
+        </div>
+        <div class="bg-card text-card-foreground border border-border rounded-lg p-6 shadow-lg">
+          <h3 class="font-semibold mb-2">Card with Shadow</h3>
+          <p class="text-sm text-muted-foreground">shadow-lg</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popover Styles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Popover Styles</h2>
+      <div class="relative inline-block">
+        <div class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg max-w-xs">
+          <h3 class="font-semibold mb-2">Popover</h3>
+          <p class="text-sm">bg-popover text-popover-foreground</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Primary Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Primary Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-primary text-primary-foreground rounded-lg p-6">
+          <p class="font-semibold mb-2">Primary Background</p>
+          <code class="text-sm opacity-90">bg-primary text-primary-foreground</code>
+        </div>
+        <button class="bg-primary text-primary-foreground rounded-lg p-4 hover:opacity-90 transition">
+          Primary Button
+        </button>
+      </div>
+    </section>
+
+    <!-- Secondary Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Secondary Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-secondary text-secondary-foreground rounded-lg p-6">
+          <p class="font-semibold mb-2">Secondary Background</p>
+          <code class="text-sm opacity-90">bg-secondary text-secondary-foreground</code>
+        </div>
+        <button class="bg-secondary text-secondary-foreground rounded-lg p-4 hover:opacity-90 transition">
+          Secondary Button
+        </button>
+      </div>
+    </section>
+
+    <!-- Muted Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Muted Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-muted text-muted-foreground rounded-lg p-6">
+          <p class="font-semibold mb-2">Muted Background</p>
+          <code class="text-sm">bg-muted text-muted-foreground</code>
+        </div>
+        <div class="bg-background border border-border rounded-lg p-6">
+          <p class="text-muted-foreground">This text uses muted-foreground color</p>
+          <code class="text-sm text-muted-foreground">text-muted-foreground</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accent Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Accent Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-accent text-accent-foreground rounded-lg p-6">
+          <p class="font-semibold mb-2">Accent Background</p>
+          <code class="text-sm opacity-90">bg-accent text-accent-foreground</code>
+        </div>
+        <button class="bg-accent text-accent-foreground rounded-lg p-4 hover:opacity-90 transition">
+          Accent Button
+        </button>
+      </div>
+    </section>
+
+    <!-- Destructive Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Destructive Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-destructive text-destructive-foreground rounded-lg p-6">
+          <p class="font-semibold mb-2">Destructive Background</p>
+          <code class="text-sm opacity-90">bg-destructive text-destructive-foreground</code>
+        </div>
+        <button class="bg-destructive text-destructive-foreground rounded-lg p-4 hover:opacity-90 transition">
+          Delete / Destructive Action
+        </button>
+      </div>
+    </section>
+
+    <!-- Border Styles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Border Styles</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="border border-border rounded-lg p-4">
+          <p class="font-semibold mb-2">Border</p>
+          <code class="text-sm text-muted-foreground">border border-border</code>
+        </div>
+        <div class="border-2 border-border rounded-lg p-4">
+          <p class="font-semibold mb-2">Border 2px</p>
+          <code class="text-sm text-muted-foreground">border-2 border-border</code>
+        </div>
+        <div class="border-4 border-border rounded-lg p-4">
+          <p class="font-semibold mb-2">Border 4px</p>
+          <code class="text-sm text-muted-foreground">border-4 border-border</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Input Styles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Input Styles</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Text Input</label>
+          <input 
+            type="text" 
+            placeholder="Enter text..." 
+            class="w-full border border-input bg-background text-foreground rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <code class="text-xs text-muted-foreground mt-2 block">border-input focus:ring-ring</code>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Textarea</label>
+          <textarea 
+            placeholder="Enter text..." 
+            class="w-full border border-input bg-background text-foreground rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ring Styles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Ring Styles (Focus States)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button class="border border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-ring">
+          Focus Ring 2px
+        </button>
+        <button class="border border-border rounded-lg p-4 focus:outline-none focus:ring-4 focus:ring-ring">
+          Focus Ring 4px
+        </button>
+        <button class="border border-border rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+          Focus Ring with Offset
+        </button>
+      </div>
+      <code class="text-sm text-muted-foreground mt-2 block">focus:ring-ring</code>
+    </section>
+
+    <!-- Chart Colors -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Chart Colors</h2>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="bg-chart-1 rounded-lg p-6 text-white">
+          <p class="font-semibold mb-2">Chart 1</p>
+          <code class="text-sm opacity-90">bg-chart-1</code>
+        </div>
+        <div class="bg-chart-2 rounded-lg p-6 text-white">
+          <p class="font-semibold mb-2">Chart 2</p>
+          <code class="text-sm opacity-90">bg-chart-2</code>
+        </div>
+        <div class="bg-chart-3 rounded-lg p-6 text-white">
+          <p class="font-semibold mb-2">Chart 3</p>
+          <code class="text-sm opacity-90">bg-chart-3</code>
+        </div>
+        <div class="bg-chart-4 rounded-lg p-6 text-white">
+          <p class="font-semibold mb-2">Chart 4</p>
+          <code class="text-sm opacity-90">bg-chart-4</code>
+        </div>
+        <div class="bg-chart-5 rounded-lg p-6 text-white">
+          <p class="font-semibold mb-2">Chart 5</p>
+          <code class="text-sm opacity-90">bg-chart-5</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Border Radius Variations -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Border Radius (using --radius variable)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-card border border-border rounded-sm p-6">
+          <p class="font-semibold mb-2">Small Radius</p>
+          <code class="text-sm text-muted-foreground">rounded-sm (calc(var(--radius) - 4px))</code>
+        </div>
+        <div class="bg-card border border-border rounded-md p-6">
+          <p class="font-semibold mb-2">Medium Radius</p>
+          <code class="text-sm text-muted-foreground">rounded-md (calc(var(--radius) - 2px))</code>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6">
+          <p class="font-semibold mb-2">Large Radius</p>
+          <code class="text-sm text-muted-foreground">rounded-lg (var(--radius) = 0.5rem)</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dark Mode Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Dark Mode</h2>
+      <div class="bg-card border border-border rounded-lg p-6">
+        <p class="mb-4">Toggle dark mode using the button at the top. All colors automatically switch when the <code class="bg-muted px-2 py-1 rounded">.dark</code> class is applied to the document.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-primary text-primary-foreground rounded-lg p-4">
+            <p class="font-semibold">Primary in Dark Mode</p>
+          </div>
+          <div class="bg-secondary text-secondary-foreground rounded-lg p-4">
+            <p class="font-semibold">Secondary in Dark Mode</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Usage Examples -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Usage Examples</h2>
+      <div class="bg-card border border-border rounded-lg p-6 space-y-4">
+        <div>
+          <h3 class="font-semibold mb-2">Card Component</h3>
+          <pre class="bg-muted text-muted-foreground p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;div class="bg-card text-card-foreground border border-border rounded-lg p-6"&gt;
+  &lt;h3&gt;Card Title&lt;/h3&gt;
+  &lt;p class="text-muted-foreground"&gt;Card content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Button Component</h3>
+          <pre class="bg-muted text-muted-foreground p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;button class="bg-primary text-primary-foreground rounded-lg px-4 py-2 hover:opacity-90"&gt;
+  Click Me
+&lt;/button&gt;</code></pre>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Input Component</h3>
+          <pre class="bg-muted text-muted-foreground p-4 rounded-lg text-sm overflow-x-auto"><code>&lt;input 
+  type="text" 
+  class="border border-input bg-background text-foreground rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring"
+/&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  document.getElementById('darkModeToggle').addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark');
+  });
+</script>
+
