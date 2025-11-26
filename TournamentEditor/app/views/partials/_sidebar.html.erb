@@ -1,0 +1,55 @@
+<aside id="sidebar" class="group bg-card border-r border-border transition-all duration-300 ease-in-out" style="width: 20%;" data-collapsed="false">
+  <div class="h-full flex flex-col">
+    <div class="flex justify-end p-2">
+      <button 
+        id="sidebar-toggle" 
+        onclick="toggleSidebar()"
+        class="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-muted"
+        aria-label="Toggle sidebar"
+      >
+        <!-- Chevron Left (shown when expanded) -->
+        <svg id="sidebar-chevron-left" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+        </svg>
+        <!-- Chevron Right (shown when collapsed) -->
+        <svg id="sidebar-chevron-right" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hidden">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-6 py-12 group-data-[collapsed=true]:hidden">
+      <button class="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+        Single Elimination
+      </button>
+      <!-- TODO: Add more tournament types here -->
+    </nav>
+  </div>
+</aside>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const chevronLeft = document.getElementById('sidebar-chevron-left');
+    const chevronRight = document.getElementById('sidebar-chevron-right');
+    const isCollapsed = sidebar.dataset.collapsed === 'true';
+    
+    if (isCollapsed) {
+      // Expand sidebar
+      sidebar.style.width = '20%';
+      sidebar.style.minWidth = '200px';
+      sidebar.style.overflow = 'visible';
+      sidebar.dataset.collapsed = 'false';
+      chevronLeft.classList.remove('hidden');
+      chevronRight.classList.add('hidden');
+    } else {
+      // Collapse sidebar
+      sidebar.style.width = '5%';
+      sidebar.style.minWidth = '50px';
+      sidebar.style.overflow = 'hidden';
+      sidebar.dataset.collapsed = 'true';
+      chevronLeft.classList.add('hidden');
+      chevronRight.classList.remove('hidden');
+    }
+  }
+</script>
+

@@ -4,12 +4,7 @@
     <div class="mb-8">
       <h1 class="text-4xl font-bold mb-2">Tailwind CSS Style Guide</h1>
       <p class="text-muted-foreground">Complete showcase of all custom styles from application.tailwind.css</p>
-      <button 
-        id="darkModeToggle" 
-        class="mt-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition"
-      >
-        Toggle Dark Mode
-      </button>
+      <%= render 'partials/dark_mode_toggle' %>
     </div>
 
     <!-- Background & Foreground -->
@@ -279,9 +274,4 @@
   </div>
 </div>
 
-<script>
-  document.getElementById('darkModeToggle').addEventListener('click', function() {
-    document.documentElement.classList.toggle('dark');
-  });
-</script>
 

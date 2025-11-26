@@ -4,11 +4,11 @@ Given('I am on the style guide page') do
 end
 
 When('I click the dark mode toggle button') do
-  click_button 'Toggle Dark Mode'
+  all('.dark-mode-toggle').first.click
 end
 
 When('I click the dark mode toggle button again') do
-  click_button 'Toggle Dark Mode'
+  all('.dark-mode-toggle').first.click
 end
 
 Then('the page should be in dark mode') do
