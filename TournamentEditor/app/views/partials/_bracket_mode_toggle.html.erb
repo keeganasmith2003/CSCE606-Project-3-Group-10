@@ -1,0 +1,92 @@
+<button 
+  class="bracket-mode-toggle px-4 py-2 rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap"
+  id="bracket-mode-toggle"
+  aria-label="Toggle bracket mode"
+  title="Toggle between Active and Draft mode"
+>
+  <!-- Active Mode Label (shown when in Draft mode) -->
+  <span class="bracket-mode-active-label hidden">
+    Active Mode
+  </span>
+  
+  <!-- Draft Mode Label (shown when in Active mode) -->
+  <span class="bracket-mode-draft-label">
+    Draft Mode
+  </span>
+</button>
+
+<script>
+  // Only initialize once, even if partial is included multiple times
+  if (!window.bracketModeToggleInitialized) {
+    window.bracketModeToggleInitialized = true;
+    
+    // Initialize TournamentState if not already initialized
+    if (typeof TournamentState === 'undefined') {
+      console.warn('TournamentState class not found. Make sure it is imported in application.js');
+    }
+    
+    // Update button appearance and state based on current mode
+    function updateBracketModeUI(isActive) {
+      const button = document.getElementById('bracket-mode-toggle');
+      const activeLabel = button.querySelector('.bracket-mode-active-label');
+      const draftLabel = button.querySelector('.bracket-mode-draft-label');
+      
+      if (isActive) {
+        // Active mode: show Draft label, use primary styling
+        button.className = 'bracket-mode-toggle px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
+        activeLabel.classList.add('hidden');
+        draftLabel.classList.remove('hidden');
+        button.setAttribute('title', 'Switch to Draft Mode');
+        button.setAttribute('aria-label', 'Switch to Draft Mode');
+      } else {
+        // Draft mode: show Active label, use secondary styling
+        button.className = 'bracket-mode-toggle px-4 py-2 bg-secondary text-secondary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
+        activeLabel.classList.remove('hidden');
+        draftLabel.classList.add('hidden');
+        button.setAttribute('title', 'Switch to Active Mode');
+        button.setAttribute('aria-label', 'Switch to Active Mode');
+      }
+      
+      // Update TournamentState if available
+      if (typeof TournamentState !== 'undefined' && window.tournamentState) {
+        window.tournamentState.setBracketMode(isActive);
+      }
+    }
+    
+    // Handle bracket mode toggle using event delegation
+    function initBracketModeToggle() {
+      // Use event delegation on document to handle all current and future buttons
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.bracket-mode-toggle')) {
+          // Get current state from TournamentState if available, otherwise default to false (Draft)
+          let currentMode = false;
+          if (typeof TournamentState !== 'undefined' && window.tournamentState) {
+            currentMode = window.tournamentState.isActiveMode();
+          } else {
+            // Fallback: check button state from classes
+            const button = e.target.closest('.bracket-mode-toggle');
+            currentMode = button.classList.contains('bg-primary');
+          }
+          
+          // Toggle mode
+          const newMode = !currentMode;
+          updateBracketModeUI(newMode);
+        }
+      });
+      
+      // Initialize UI on page load (default to Draft mode)
+      const initialMode = (typeof TournamentState !== 'undefined' && window.tournamentState) 
+        ? window.tournamentState.isActiveMode() 
+        : false;
+      updateBracketModeUI(initialMode);
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initBracketModeToggle);
+    } else {
+      initBracketModeToggle();
+    }
+  }
+</script>
+

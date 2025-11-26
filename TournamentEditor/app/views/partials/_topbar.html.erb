@@ -4,14 +4,15 @@
     
     <!-- Desktop buttons -->
     <div class="hidden sm:flex items-center gap-3">
-    <%= render 'partials/dark_mode_toggle' %>
-	<br/>
-	<%= link_to "Export Bracket", tournaments_path(format: :csv), class: "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap" %>
-    <%= form_with url: import_tournaments_path, local: true, multipart: true do |form| %>
-  		<%= form.file_field :file %>
-  		<%= form.submit "Upload CSV", class: "px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap" %>
-	<% end %>
-
+      <%= render 'partials/dark_mode_toggle' %>
+      <%= render 'partials/bracket_mode_toggle' %>
+      <%= link_to "Export Bracket", tournaments_path(format: :csv), class: "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap" %>
+      <%= form_with url: import_tournaments_path, local: true, multipart: true, class: "inline" do |form| %>
+        <%= form.file_field :file, class: "hidden", id: "csv-file-input", onchange: "this.form.submit()" %>
+        <button type="button" onclick="document.getElementById('csv-file-input').click()" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+          Import Bracket
+        </button>
+      <% end %>
     </div>
     
     <!-- Mobile hamburger menu button -->
@@ -56,13 +57,14 @@
   <!-- Menu content -->
   <div class="flex-1 flex flex-col gap-4 p-4">
     <%= render 'partials/dark_mode_toggle' %>
-    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center"
-	onclick="tournaments_path(format: :csv)">
-      Export Bracket
-    </button>
-    <button class="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center">
-      Import Bracket
-    </button>
+    <%= render 'partials/bracket_mode_toggle' %>
+    <%= link_to "Export Bracket", tournaments_path(format: :csv), class: "w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center" %>
+    <%= form_with url: import_tournaments_path, local: true, multipart: true, class: "w-full" do |form| %>
+      <%= form.file_field :file, class: "hidden", id: "csv-file-input-mobile", onchange: "this.form.submit()" %>
+      <button type="button" onclick="document.getElementById('csv-file-input-mobile').click()" class="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center">
+        Import Bracket
+      </button>
+    <% end %>
   </div>
 </div>
 
@@ -95,4 +97,3 @@
     }
   });
 </script>
-

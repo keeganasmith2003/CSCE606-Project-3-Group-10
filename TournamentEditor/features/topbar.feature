@@ -15,3 +15,8 @@ Feature: Topbar Component
     Given I am on the root page
     Then I should see a dark mode toggle in the topbar
 
+  @javascript
+  Scenario: Topbar contains bracket mode toggle
+    Given I am on the root page
+    Then I should see the bracket mode toggle in the topbar
+
