@@ -1,0 +1,96 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+  <div class="flex items-center justify-between px-6 py-4">
+    <h1 class="text-4xl font-sans font-semibold text-foreground">Bracketmaker</h1>
+    
+    <!-- Desktop buttons -->
+    <div class="hidden sm:flex items-center gap-3">
+      <%= render 'partials/dark_mode_toggle' %>
+      <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+        Export Bracket
+      </button>
+      <button class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+        Import Bracket
+      </button>
+    </div>
+    
+    <!-- Mobile hamburger menu button -->
+    <button 
+      id="mobile-menu-toggle"
+      class="sm:hidden text-muted-foreground hover:text-foreground transition-colors p-2 rounded hover:bg-muted"
+      aria-label="Open menu"
+      onclick="toggleMobileMenu()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile menu overlay -->
+<div 
+  id="mobile-menu-overlay"
+  class="fixed inset-0 bg-black/50 z-40 hidden sm:hidden transition-opacity duration-300"
+  onclick="closeMobileMenu()"
+></div>
+
+<!-- Mobile menu sheet (slides from right) -->
+<div 
+  id="mobile-menu-sheet"
+  class="fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform translate-x-full transition-transform duration-300 sm:hidden flex flex-col"
+>
+  <!-- Close button -->
+  <div class="flex justify-end p-4 border-b border-border">
+    <button 
+      onclick="closeMobileMenu()"
+      class="text-muted-foreground hover:text-foreground transition-colors p-2 rounded hover:bg-muted"
+      aria-label="Close menu"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Menu content -->
+  <div class="flex-1 flex flex-col gap-4 p-4">
+    <%= render 'partials/dark_mode_toggle' %>
+    <button class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center">
+      Export Bracket
+    </button>
+    <button class="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center">
+      Import Bracket
+    </button>
+  </div>
+</div>
+
+<script>
+  function toggleMobileMenu() {
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const sheet = document.getElementById('mobile-menu-sheet');
+    
+    if (sheet.classList.contains('translate-x-full')) {
+      overlay.classList.remove('hidden');
+      sheet.classList.remove('translate-x-full');
+      document.body.style.overflow = 'hidden'; 
+    } else {
+      closeMobileMenu();
+    }
+  }
+  
+  function closeMobileMenu() {
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const sheet = document.getElementById('mobile-menu-sheet');
+    
+    overlay.classList.add('hidden');
+    sheet.classList.add('translate-x-full');
+    document.body.style.overflow = ''; 
+  }
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+    }
+  });
+</script>
+
