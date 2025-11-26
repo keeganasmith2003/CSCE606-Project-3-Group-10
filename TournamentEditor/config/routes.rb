@@ -6,4 +6,7 @@ Rails.application.routes.draw do
 
   # Style Guide route
   get 'style', to: 'style#index'
+  resources :tournaments do
+    collection { post :import }
+  end
 end
