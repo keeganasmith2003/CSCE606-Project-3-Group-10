@@ -70,10 +70,11 @@ When('I click the bracket mode toggle button') do
       window.tournamentState = new TournamentState();
     }
   ')
-  find('.bracket-mode-toggle', visible: true).click
-  sleep(1.0)
+  # Read state BEFORE clicking to avoid reversing the toggle
   state_before = page.evaluate_script('window.tournamentState ? window.tournamentState.isActiveMode() : false')
   expected_state_after = !state_before
+  find('.bracket-mode-toggle', visible: true).click
+  sleep(1.0)
   page.execute_script("
     if (window.tournamentState) {
       window.tournamentState.setBracketMode(#{expected_state_after});

@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   # Style Guide route
   get 'style', to: 'style#index'
   resources :tournaments do
-    collection { post :import }
+    collection do
+      post :import
+      post :update_bracket
+    end
   end
 end

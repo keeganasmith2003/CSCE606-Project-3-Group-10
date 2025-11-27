@@ -18,7 +18,11 @@
       </button>
     </div>
     <nav class="flex-1 px-6 py-12 group-data-[collapsed=true]:hidden">
-      <button class="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center text-nowrap overflow-hidden text-ellipsis whitespace-nowrap">
+      <button 
+        id="single-elimination-btn"
+        onclick="startSingleEliminationBracket()"
+        class="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium text-center text-nowrap overflow-hidden text-ellipsis whitespace-nowrap"
+      >
         Single Elimination
       </button>
       <!-- TODO: Add more tournament types here -->
@@ -49,6 +53,46 @@
       sidebar.dataset.collapsed = 'true';
       chevronLeft.classList.add('hidden');
       chevronRight.classList.remove('hidden');
+    }
+  }
+  
+  function startSingleEliminationBracket() {
+    // Prompt user for number of competitors or use default
+    const numCompetitors = prompt('Enter number of competitors (default: 8):', '8');
+    
+    if (numCompetitors === null) {
+      // User cancelled
+      return;
+    }
+    
+    const num = parseInt(numCompetitors, 10);
+    
+    if (isNaN(num) || num < 2) {
+      alert('Please enter a valid number of competitors (minimum 2)');
+      return;
+    }
+    
+    // Generate default competitor names
+    const competitors = [];
+    for (let i = 1; i <= num; i++) {
+      competitors.push(`Competitor ${i}`);
+    }
+    
+    // Initialize bracket using BracketManager
+    if (window.startNewBracket) {
+      window.startNewBracket(competitors);
+      
+      // Ensure we're in Draft Mode for a new bracket
+      if (window.tournamentState && window.tournamentState.isActiveMode()) {
+        // Click the bracket mode toggle to switch to Draft Mode
+        const toggleButton = document.getElementById('bracket-mode-toggle');
+        if (toggleButton) {
+          toggleButton.click();
+        }
+      }
+    } else {
+      console.error('BracketManager not loaded');
+      alert('Bracket manager not ready. Please refresh the page and try again.');
     }
   }
 </script>

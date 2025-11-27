@@ -1,7 +1,83 @@
-<div>
+<div class="h-full flex flex-col p-6">
+  <!-- Empty State (shown when no bracket exists) -->
+  <div id="bracket-empty-state" class="flex flex-col items-center justify-center h-full">
+    <div class="text-center max-w-2xl">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-24 mx-auto text-muted-foreground mb-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+      </svg>
+      <h2 class="text-2xl font-bold text-foreground mb-3">No Bracket Created</h2>
+      <p class="text-muted-foreground mb-6">
+        To get started, import a bracket from a CSV file or select a bracket type from the sidebar to create a new bracket from scratch.
+      </p>
+    </div>
+  </div>
 
-  To get started, Import a bracket from a CSV file. or start a new bracket from scratch.
+  <!-- Bracket Viewer Container (shown when bracket exists) -->
+  <div id="bracket-viewer-container" class="h-full flex flex-col" style="display: none;">
+    <!-- Draft Mode Controls -->
+    <div id="draft-mode-controls" class="flex items-center justify-between mb-4 p-4 bg-card border border-border rounded-lg" style="display: none;">
+      <div class="flex items-center gap-2">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-primary">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-foreground">Draft Mode</h3>
+          <p class="text-sm text-muted-foreground">Drag competitors to organize your bracket</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          onclick="validateBracket()" 
+          class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium"
+        >
+          Validate
+        </button>
+        <button 
+          onclick="confirmBracketChanges()" 
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity font-medium"
+        >
+          Confirm Changes
+        </button>
+      </div>
+    </div>
 
-
+    <!-- Bracket Viewer -->
+    <div id="bracket-viewer" class="brackets-viewer flex-1 overflow-auto p-4 bg-card border border-border rounded-lg">
+      <!-- brackets-viewer.js will render bracket here -->
+    </div>
+  </div>
 </div>
+
+<style>
+  /* Tailwind-styled overrides for brackets-viewer */
+  #bracket-viewer {
+    --bracket-color: hsl(var(--border));
+    --bracket-bg: hsl(var(--card));
+    --participant-bg: hsl(var(--card));
+    --participant-border: hsl(var(--border));
+    --participant-text: hsl(var(--foreground));
+  }
+
+  /* Draft mode drag-and-drop styling */
+  #bracket-viewer.draft-mode .draggable-participant {
+    cursor: grab;
+    transition: all 0.2s ease;
+  }
+
+  #bracket-viewer.draft-mode .draggable-participant:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+  }
+
+  #bracket-viewer.draft-mode .draggable-participant:active {
+    cursor: grabbing;
+  }
+
+  #bracket-viewer .drag-over {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+</style>
 
