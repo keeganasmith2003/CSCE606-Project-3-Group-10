@@ -201,6 +201,8 @@ class BracketManager {
 					container.classList.remove('draft-mode');
 				}
 
+				console.log(this.bracketData);
+
 				bracketsViewer.render(this.bracketData, {
 					selector: '#bracket-viewer',
 					participantOriginPlacement: 'before',
@@ -557,7 +559,7 @@ class BracketManager {
     	headers = Object.keys(this.bracketData.participants[0]);
   		csvContent += headers.join(',') + '\r\n';
 
-		if(this.bracketData.matchGames.length > 0)
+		if(this.bracketData.participants.length > 0)
 		{
   			this.bracketData.participants.forEach(function(row) {
 				let line = Object.values(row).map(item => {
@@ -619,23 +621,29 @@ class BracketManager {
 	 */
 	LoadFromCSV(file) {
   		if (file) {
+			console.log(this.bracketData);
+
 			const reader = new FileReader();
-			reader.onload = function(e) {
+			reader.onload = (e) => {
 				const text = e.target.result;
 					// You can process the CSV string here
 					// Example basic processing: split into lines and then values
-				const lines = text.split('\n');
+				const lines = text.split('\r\n');
     			const headers = lines[0].split(',');
 
 				let i = 0;
-						  console.log("COMPETITORS");
+				console.log("COMPETITORS");
 				while(i < lines.length)
 				{
-						  console.log("COMPETITORS2");
-						  console.log(lines[i]);
-    			    const currentLine = lines[i].split(',');
-					switch (currentLine){
+					console.log(this.bracketData);
+					 console.log(lines[i]);
+    			    let currentLine = lines[i].split(',');
+					let headers = [];
+					 console.log(currentLine[0]);
+					switch (currentLine[0]){
   						case "*competitors*":
+						  console.log("_*competitors*_");
+							console.log(this.bracketData);
 						  this.competitors = [];
 						  ++i;
 						  while(lines[i]!="*stages*")
@@ -645,33 +653,37 @@ class BracketManager {
 						  }
   						  break;
   						case "*stages*":
+						  console.log("_*stages*_");
+							console.log(this.bracketData);
 						  this.bracketData.stages = [];
 						  ++i;
-    					  let headers = lines[i++].split(',');
+    					 headers = lines[i++].split(',');
 						  while(lines[i] != "*matches*")
 						  {
-    						let currentline = lines[j].split(',');
+    						let currentline = lines[i].split(',');
 
-    						// Ensure the line has the same number of fields as headers
+    						// Ensure the line has the same number of fields as  headers
     						if (currentline.length === headers.length) {
+								let obj = {};
     						    for (let j = 0; j < headers.length; j++) {
     								try {
-    						        	this.bracketData.stages[headers[j].trim()] = JSON.parse(currentline[j].trim());
+    						        	obj[headers[j].trim()] = JSON.parse(currentline[j].trim());
     								} catch (e) {
-    						        	this.bracketData.stages[headers[j].trim()] = currentline[j].trim();
+    						        	obj[headers[j].trim()] = currentline[j].trim();
     								}
     						    }
+								this.bracketData.stages.push(obj);
     						}
+						 	++i;
     					  }
-						  ++i;
   						  break;
   						case "*matches*":
-						  this.bracketData.matches = [];
+						  console.log("_*matches*_");
 						  ++i;
     					  headers = lines[i++].split(',');
 						  while(lines[i]!="*matchGames*")
 						  {
-    						let currentline = lines[j].split(',');
+    						let currentline = lines[i].split(',');
 
     						// Ensure the line has the same number of fields as headers
     						if (currentline.length === headers.length) {
@@ -682,11 +694,12 @@ class BracketManager {
     						        	this.bracketData.matches[headers[j].trim()] = currentline[j].trim();
     								}
     						    }
-    						    result.push(obj);
     						}
+							++i;
 						  }
   						  break;
   						case "*matchGames*":
+						  console.log("_*matchGames*_");
 						  this.bracketData.matchGames = [];
 						  ++i;
 						  if(lines[i] != "*participants*")
@@ -695,7 +708,7 @@ class BracketManager {
 						  }
 						  while(lines[i]!="*participants*")
 						  {
-    						let currentline = lines[j].split(',');
+    						let currentline = lines[i].split(',');
 
     						// Ensure the line has the same number of fields as headers
     						if (currentline.length === headers.length) {
@@ -707,44 +720,59 @@ class BracketManager {
     								}
     						    }
     						}
+							++i;
 						  }
   						  break;
   						case "*participants*":
+						  console.log("_*participants*_");
 						  this.bracketData.participants = [];
 						  ++i;
     					  headers = lines[i++].split(',');
 						  while(i < lines.length)
 						  {
-    						const obj = {};
-    						const currentline = lines[j].split(',');
+						  console.log("_*participants*_123");
+    						const currentline = lines[i].split(',');
 
     						// Ensure the line has the same number of fields as headers
-    						if (currentline.length === headers.length) {
+								let obj = {};
     						    for (let j = 0; j < headers.length; j++) {
     								try {
-    						        	this.bracketData.participants[headers[j].trim()] = JSON.parse(currentline[j].trim());
+    						        	obj[headers[j].trim()] = JSON.parse(currentline[j]);
     								} catch (e) {
-    						        	this.bracketData.participants[headers[j].trim()] = currentline[j].trim();
+    						        	obj[headers[j].trim()] = currentline[j];
     								}
     						    }
-    						}
+							this.bracketData.participants.push(obj);
+							++i;
 						  }
+						 console.log("DONE?: ")
+						 console.log( this.bracketData);
+						 console.log( this.competitors);
   						  break;
 					}
-					++i;
 				}
+				
+				this.isDraftMode = true;
 
-    			for (let i = 1; i < lines.length; i++) {
-    			    const obj = {};
-    			    const currentline = lines[i].split(',');
+							 console.log("DONE!?: ")
+							 console.log( this.bracketData);
+							 console.log( this.competitors);
 
-    			    // Ensure the line has the same number of fields as headers
-    			    if (currentline.length === headers.length) {
-    			        for (let j = 0; j < headers.length; j++) {
-    			            obj[headers[j].trim()] = currentline[j].trim();
-    			        }
-    			    }
-    			}
+				if (this.bracketData) {
+					this.saveToLocalStorage();
+							 console.log("DONE: ")
+							 console.log( this.bracketData);
+							 console.log( this.competitors);
+					if (document.readyState === 'loading') {
+						document.addEventListener('DOMContentLoaded', () => {
+							this.renderBracket();
+							this.updateUI();
+						});
+					} else {
+						this.renderBracket();
+						this.updateUI();
+					}
+				}
 			};
 			reader.readAsText(file);
     		return;
