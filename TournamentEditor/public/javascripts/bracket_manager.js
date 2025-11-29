@@ -39,6 +39,7 @@ class BracketManager {
 		}
 	}
 
+	
 	/**
 	 * Initialize a new single elimination bracket
 	 * @param {Array<string>} competitorNames - Array of competitor names
@@ -476,6 +477,116 @@ class BracketManager {
 	}
 
 	/**
+	 * Save bracket state to CSV
+	 */
+	SaveToCSV() {
+  		let csvContent = '';
+			
+  		// Add header row
+  		let header = "*COMPETITORS*";
+  		csvContent += header + '\r\n';
+			
+  		// Add data rows
+  		this.competitors.forEach(function(row) {
+  		  let line = row;
+  		  csvContent += line + '\r\n';
+  		});
+
+  		header = "*BRACKET_DATA*";
+  		csvContent += header + '\r\n';
+
+  		header = "*STAGES*";
+  		csvContent += header + '\r\n';
+    	let headers = Object.keys(this.bracketData.stages[0]);
+  		csvContent += headers.join(',') + '\r\n';
+
+		if(this.bracketData.stages.length > 0)
+		{
+  			this.bracketData.stages.forEach(function(row) {
+				let line = Object.values(row).map(item => {
+    				// Check if the item is an object and not null or an array
+    				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+    				    return JSON.stringify(item); // Stringify the object
+    				}
+    				return item; // Return other types as is
+				}).join(',');
+  			  	csvContent += line + '\r\n';
+  			});
+		}
+
+  		header = "*MATCHES*";
+  		csvContent += header + '\r\n';
+    	headers = Object.keys(this.bracketData.matches[0]);
+  		csvContent += headers.join(',') + '\r\n';
+
+		if(this.bracketData.matches.length > 0)
+		{
+  			this.bracketData.matches.forEach(function(row) {
+				let line = Object.values(row).map(item => {
+    				// Check if the item is an object and not null or an array
+    				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+    				    return JSON.stringify(item); // Stringify the object
+    				}
+    				return item; // Return other types as is
+				}).join(',');
+  				csvContent += line + '\r\n';
+  			});
+		}
+
+  		header = "*MATCH_GAMES*";
+  		csvContent += header + '\r\n';
+		if(this.bracketData.matchGames > 0)
+		{
+    		headers = Object.keys(this.bracketData.matchGames[0]);
+  			csvContent += headers.join(',') + '\r\n';
+		}
+
+		if(this.bracketData.matchGames.length > 0)
+		{
+  			this.bracketData.matchGames.forEach(function(row) {
+  			  	let line = Object.values(row).map(item => {
+    				// Check if the item is an object and not null or an array
+    				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+    				    return JSON.stringify(item); // Stringify the object
+    				}
+    				return item; // Return other types as is
+				}).join(',');
+  			  	csvContent += line + '\r\n';
+  			});
+		}
+
+  		header = "*PARTICIPANTS*";
+  		csvContent += header + '\r\n';
+    	headers = Object.keys(this.bracketData.participants[0]);
+  		csvContent += headers.join(',') + '\r\n';
+
+		if(this.bracketData.matchGames.length > 0)
+		{
+  			this.bracketData.participants.forEach(function(row) {
+				let line = Object.values(row).map(item => {
+    				// Check if the item is an object and not null or an array
+    				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+    				    return JSON.stringify(item); // Stringify the object
+    				}
+    				return item; // Return other types as is
+				}).join(',');
+  			 	csvContent += line + '\r\n';
+  			});
+		}
+
+  		// Use the data URI scheme with proper encoding and a Byte Order Mark (BOM) for Excel compatibility
+  		const encodedUri = encodeURI("data:text/csv;charset=utf-8,\uFEFF" + csvContent);
+  		const link = document.createElement("a");
+
+  		link.setAttribute("href", encodedUri);
+  		link.setAttribute("download", "tournament.csv"); // The 'download' attribute sets the file name
+  		document.body.appendChild(link); // Required for Firefox
+
+  		link.click(); // Simulate a click to trigger download
+  		document.body.removeChild(link); // Clean up the DOM
+	}
+
+	/**
 	 * Load bracket state from local storage
 	 */
 	loadFromLocalStorage() {
@@ -561,4 +672,10 @@ if (typeof window !== 'undefined') {
 			window.bracketManager.initializeBracket(competitorNames);
 		}
 	};
+
+	window.SaveToCSV = function() {
+		if(window.bracketManager) {
+			window.bracketManager.SaveToCSV();
+		}
+	}
 }
