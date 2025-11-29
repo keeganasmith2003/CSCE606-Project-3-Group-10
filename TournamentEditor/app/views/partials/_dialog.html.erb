@@ -1,0 +1,213 @@
+<%# app/views/shared/_dialog.html.erb %>
+<%#
+  How to use:
+  Example:
+  <%= render 'shared/dialog', {
+     dialogTitle: 'Contact Us',
+     description: 'Please fill out the form below to contact us.',
+     submitUrl: '/submit_contact',
+     cancelUrl: '/',
+     buttonText: 'Open Contact Form',
+     dialogHtml: render(partial: 'shared/contact_form', locals: { uuid: SecureRandom.uuid })
+  } 
+  This will render a dialog with the title 'Contact Us', the description 'Please fill out the form below to contact us.', the form to submit the contact information, and a button to open the dialog.
+
+  Parameters:
+  - dialogTitle: The title of the dialog
+  - description: The description of the dialog
+  - submitUrl: The URL to submit the form
+  - cancelUrl: The URL to cancel the dialog
+  - buttonText: The text of the button to open the dialog
+  - buttonHtml: The HTML of the button to open the dialog
+  - dialogHtml: The HTML of the dialog content
+%>
+<% 
+  # Required parameters
+  dialogTitle = local_assigns[:dialogTitle]
+  description = local_assigns[:description]
+  submitUrl = local_assigns[:submitUrl]
+  
+  # Optional parameters with defaults
+  cancelUrl = local_assigns.fetch(:cancelUrl, nil)
+  buttonText = local_assigns.fetch(:buttonText, nil)
+  buttonHtml = local_assigns.fetch(:buttonHtml, nil)
+  dialogHtml = local_assigns.fetch(:dialogHtml, nil)
+  
+  # Generate unique ID for this dialog instance
+  uuid = SecureRandom.uuid
+  dialog_id = "dialog_#{uuid}"
+  trigger_id = "dialogTrigger_#{uuid}"
+  close_id = "closeDialog_#{uuid}"
+%>
+
+<!-- Button to trigger dialog -->
+<% if buttonHtml.present? %>
+  <%# Replace the placeholder id with the actual trigger_id %>
+  <%= buttonHtml.to_s.gsub('id="dialogTrigger"', "id=\"#{trigger_id}\"").gsub("id='dialogTrigger'", "id='#{trigger_id}'").html_safe %>
+<% elsif buttonText.present? %>
+  <button id="<%= trigger_id %>" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+    <%= buttonText || 'Open' %>
+  </button>
+<% else %>
+  <button id="<%= trigger_id %>" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+    Open
+  </button>
+<% end %>
+
+<!-- Dialog -->
+<% dialog_width_class = dialogHtml && dialogHtml.to_s.include?('filter-form') ? 'max-w-4xl' : 'max-w-md' %>
+<dialog id="<%= dialog_id %>" class="rounded-xl p-6 bg-white shadow-xl w-full <%= dialog_width_class %> fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/3 max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between items-start mb-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800"><%= dialogTitle %></h1>
+      <p class="text-gray-600 mt-1"><%= description %></p>
+    </div>
+    <button id="<%= close_id %>" class="text-gray-500 hover:text-gray-700" <%= "data-cancel-url=#{cancelUrl}" if local_assigns.has_key? :cancelUrl %> >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+    </button>
+  </div>
+
+  <!-- Dialog content -->
+  <% if dialogHtml && dialogHtml.to_s.include?('filter-form') %>
+    <%# If dialogHtml contains its own form (like filter_options), render it directly %>
+    <div>
+      <%= dialogHtml.html_safe %>
+    </div>
+  <% else %>
+    <form action="<%= submitUrl %>" method="post">
+      <% if dialogHtml %>
+        <%= dialogHtml.html_safe %>
+      <% else %>
+        <!-- Default form content if no dialogHtml provided -->
+        <div class="mb-4">
+          <label for="defaultInput_<%= uuid %>" class="block text-gray-700 font-medium mb-2">Input</label>
+          <input type="text" id="defaultInput_<%= uuid %>" name="input" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+      <% end %>
+
+      <!-- Submit button -->
+      <div class="flex justify-end mt-6">
+        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+          Submit
+        </button>
+      </div>
+    </form>
+  <% end %>
+</dialog>
+
+<!-- JavaScript to handle dialog open/close -->
+<script>
+  (function() {
+    const dialogId = '<%= dialog_id %>';
+    const triggerId = '<%= trigger_id %>';
+    const closeId = '<%= close_id %>';
+    
+    // Store event handler references for cleanup
+    let clickHandler = null;
+    let closeHandler = null;
+    let outsideClickHandler = null;
+
+    function cleanupDialog() {
+      const trigger = document.getElementById(triggerId);
+      const closeButton = document.getElementById(closeId);
+      const dialog = document.getElementById(dialogId);
+
+      if (trigger && clickHandler) {
+        trigger.removeEventListener('click', clickHandler);
+        clickHandler = null;
+      }
+
+      if (closeButton && closeHandler) {
+        closeButton.removeEventListener('click', closeHandler);
+        closeHandler = null;
+      }
+
+      if (dialog && outsideClickHandler) {
+        dialog.removeEventListener('click', outsideClickHandler);
+        outsideClickHandler = null;
+      }
+
+      // Reset the ready flag to allow re-initialization
+      if (trigger) {
+        trigger.removeAttribute('data-dialog-ready');
+      }
+    }
+
+    function initializeDialog() {
+      const dialog = document.getElementById(dialogId);
+      const trigger = document.getElementById(triggerId);
+      const closeButton = document.getElementById(closeId);
+
+      if (!dialog || !trigger) return;
+
+      // Prevent duplicate initialization on same page load cycle
+      // (turbo:load/turbo:restore can fire multiple times, but we only want one set of handlers)
+      if (trigger.dataset?.dialogReady === 'true' && clickHandler !== null) {
+        // Already initialized and handlers exist - skip to prevent duplicates
+        return;
+      }
+
+      // Clean up any existing handlers before adding new ones
+      // This is safe even if handlers don't exist (removeEventListener with null does nothing)
+      cleanupDialog();
+      
+      // Mark as ready
+      trigger.dataset.dialogReady = 'true';
+
+      // Open dialog when trigger is clicked
+      clickHandler = function(e) {
+        e.preventDefault();
+        dialog.showModal();
+      };
+      trigger.addEventListener('click', clickHandler);
+
+      // Close dialog when close button is clicked
+      if (closeButton) {
+        closeHandler = function(e) {
+          e.preventDefault();
+          dialog.close();
+          const cancelUrl = closeButton.getAttribute('data-cancel-url');
+          if (cancelUrl) {
+            window.location.href = cancelUrl;
+          }
+        };
+        closeButton.addEventListener('click', closeHandler);
+      }
+
+      // Close dialog when clicking outside
+      outsideClickHandler = function(e) {
+        if (e.target === dialog) {
+          dialog.close();
+        }
+      };
+      dialog.addEventListener('click', outsideClickHandler);
+    }
+
+    // Initialize immediately if DOM is ready, or wait for it
+    function tryInitialize() {
+      if (document.getElementById(triggerId)) {
+        initializeDialog();
+      }
+    }
+
+    // Handle cache restoration from browser back/forward button
+    function handleRestore() {
+      // Clean up any existing handlers and reset state for re-initialization
+      cleanupDialog();
+      // Now initialize fresh
+      tryInitialize();
+    }
+
+    // Try immediately
+    tryInitialize();
+
+    // Also listen for page load events
+    document.addEventListener('DOMContentLoaded', tryInitialize);
+    document.addEventListener('turbo:load', tryInitialize);
+    document.addEventListener('turbo:restore', handleRestore);
+    document.addEventListener('turbo:frame-load', tryInitialize);
+  })();
+</script>
+

@@ -72,4 +72,135 @@
   </div>
 </div>
 
+<!-- Winner Selection Dialog for Active Mode -->
+<dialog id="winner-selection-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 0.5rem; padding: 0; max-width: 28rem; width: 90%; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); z-index: 50;">
+  <div style="padding: 1.5rem;">
+    <!-- Header with X button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 600; color: hsl(var(--foreground)); margin: 0;">Select a Winner</h2>
+      <button id="winner-dialog-close-x" type="button" style="background: none; border: none; color: hsl(var(--muted-foreground)); cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem; transition: all 0.2s;" onmouseover="this.style.background='hsl(var(--secondary))'; this.style.color='hsl(var(--foreground))'" onmouseout="this.style.background='none'; this.style.color='hsl(var(--muted-foreground))'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+    </div>
+
+    <!-- Competitor Selection Buttons -->
+    <div style="display: flex; flex-direction: column; gap: 0; margin-bottom: 1.5rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; overflow: hidden;">
+      <!-- Competitor 1 Button -->
+      <button id="winner-dialog-competitor1-button" type="button" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: hsl(var(--card)); border: none; border-bottom: 1px solid hsl(var(--border)); cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;" onmouseover="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--secondary))'" onmouseout="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--card))'">
+        <span id="winner-dialog-competitor1-name" style="font-size: 1.125rem; font-weight: 500; color: hsl(var(--foreground));">Competitor 1</span>
+        <span class="winner-status" style="display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; font-weight: 600; font-size: 1rem; background: hsl(var(--success)); color: hsl(var(--success-foreground));">W</span>
+      </button>
+
+      <!-- Competitor 2 Button -->
+      <button id="winner-dialog-competitor2-button" type="button" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: hsl(var(--card)); border: none; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;" onmouseover="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--secondary))'" onmouseout="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--card))'">
+        <span id="winner-dialog-competitor2-name" style="font-size: 1.125rem; font-weight: 500; color: hsl(var(--foreground));">Competitor 2</span>
+        <span class="winner-status" style="display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; font-weight: 600; font-size: 1rem; background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground));">L</span>
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+      <button id="winner-dialog-cancel" type="button" style="padding: 0.625rem 1.25rem; background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Cancel</button>
+      <button id="winner-dialog-confirm" type="button" style="padding: 0.625rem 1.25rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Confirm</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Winner Selection Dialog Logic
+  (function() {
+    const dialog = document.getElementById('winner-selection-dialog');
+    if (!dialog) return;
+
+    const comp1Button = document.getElementById('winner-dialog-competitor1-button');
+    const comp2Button = document.getElementById('winner-dialog-competitor2-button');
+    const confirmButton = document.getElementById('winner-dialog-confirm');
+    const cancelButton = document.getElementById('winner-dialog-cancel');
+    const closeXButton = document.getElementById('winner-dialog-close-x');
+
+    // Toggle winner selection
+    function selectWinnerUI(buttonElement, otherButtonElement) {
+      const status = buttonElement.querySelector('.winner-status');
+      const otherStatus = otherButtonElement.querySelector('.winner-status');
+      
+      if (buttonElement.classList.contains('selected-winner')) {
+        // Already selected, do nothing
+        return;
+      }
+
+      // Update selection
+      buttonElement.classList.add('selected-winner');
+      otherButtonElement.classList.remove('selected-winner');
+      
+      // Update this button to winner (W)
+      status.textContent = 'W';
+      status.style.background = 'hsl(var(--success))';
+      status.style.color = 'hsl(var(--success-foreground))';
+      buttonElement.style.background = 'hsl(var(--secondary))';
+      
+      // Update other button to loser (L)
+      otherStatus.textContent = 'L';
+      otherStatus.style.background = 'hsl(var(--destructive))';
+      otherStatus.style.color = 'hsl(var(--destructive-foreground))';
+      otherButtonElement.style.background = 'hsl(var(--card))';
+
+      // Update dialog data
+      if (buttonElement.id === 'winner-dialog-competitor1-button') {
+        dialog.dataset.selectedWinner = dialog.dataset.comp1Id;
+      } else {
+        dialog.dataset.selectedWinner = dialog.dataset.comp2Id;
+      }
+    }
+
+    // Competitor button click handlers
+    if (comp1Button) {
+      comp1Button.addEventListener('click', function() {
+        selectWinnerUI(comp1Button, comp2Button);
+      });
+    }
+
+    if (comp2Button) {
+      comp2Button.addEventListener('click', function() {
+        selectWinnerUI(comp2Button, comp1Button);
+      });
+    }
+
+    // Confirm button handler
+    if (confirmButton) {
+      confirmButton.addEventListener('click', function() {
+        const matchId = parseInt(dialog.dataset.matchId);
+        const winnerId = parseInt(dialog.dataset.selectedWinner);
+        
+        if (window.bracketManager && matchId && winnerId) {
+          window.bracketManager.selectWinner(matchId, winnerId);
+        }
+        
+        dialog.close();
+      });
+    }
+
+    // Cancel and X button handlers
+    function closeDialog() {
+      dialog.close();
+    }
+
+    if (cancelButton) {
+      cancelButton.addEventListener('click', closeDialog);
+    }
+
+    if (closeXButton) {
+      closeXButton.addEventListener('click', closeDialog);
+    }
+
+    // Close on backdrop click
+    dialog.addEventListener('click', function(e) {
+      if (e.target === dialog) {
+        closeDialog();
+      }
+    });
+  })();
+</script>
 

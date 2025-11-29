@@ -275,15 +275,123 @@ class BracketManager {
 
 		container.classList.toggle('draft-mode', this.isDraftMode);
 
-		window.bracketsViewer.render(this.bracketData, {
+		const renderConfig = {
 			clear: true,
-		});
+		};
 
+		// In Active mode, enable match clicking for winner selection
+		if (!this.isDraftMode) {
+			renderConfig.onMatchClick = (match) => this.handleMatchClick(match);
+		}
+
+		window.bracketsViewer.render(this.bracketData, renderConfig);
 		setTimeout(() => {
 			if (this.isDraftMode) {
 				this.attachDragAndDrop();
 			}
 		}, 300);
+	}
+
+	handleMatchClick(match) {
+		// Only allow winner selection if both opponents are present
+		if (!match.opponent1 || !match.opponent2 || match.opponent1.id === null || match.opponent2.id === null) {
+			return; // Can't select winner without both competitors
+		}
+
+		// Don't allow changing already completed matches
+		if (match.status === 4) {
+			return; // Match already completed
+		}
+
+		// Open winner selection dialog
+		this.openWinnerDialog(match);
+	}
+
+	openWinnerDialog(match) {
+		const dialog = document.getElementById('winner-selection-dialog');
+		if (!dialog) return;
+
+		// Get participant names
+		const participant1 = this.bracketData.participants.find((p) => p.id === match.opponent1.id);
+		const participant2 = this.bracketData.participants.find((p) => p.id === match.opponent2.id);
+
+		if (!participant1 || !participant2) return;
+
+		// Set dialog content
+		const comp1Name = dialog.querySelector('#winner-dialog-competitor1-name');
+		const comp2Name = dialog.querySelector('#winner-dialog-competitor2-name');
+		const comp1Button = dialog.querySelector('#winner-dialog-competitor1-button');
+		const comp2Button = dialog.querySelector('#winner-dialog-competitor2-button');
+		const confirmButton = dialog.querySelector('#winner-dialog-confirm');
+
+		if (comp1Name) comp1Name.textContent = participant1.name;
+		if (comp2Name) comp2Name.textContent = participant2.name;
+
+		// Store match info on dialog for later use
+		dialog.dataset.matchId = match.id;
+		dialog.dataset.comp1Id = participant1.id;
+		dialog.dataset.comp2Id = participant2.id;
+
+		// Set default selection (competitor 1 wins)
+		dialog.dataset.selectedWinner = participant1.id;
+		if (comp1Button) {
+			comp1Button.querySelector('.winner-status').textContent = 'W';
+			comp1Button.classList.add('selected-winner');
+		}
+		if (comp2Button) {
+			comp2Button.querySelector('.winner-status').textContent = 'L';
+			comp2Button.classList.remove('selected-winner');
+		}
+
+		// Show dialog
+		dialog.showModal();
+	}
+
+	selectWinner(matchId, winnerId) {
+		const match = this.bracketData.matches.find((m) => m.id === matchId);
+		if (!match) return;
+
+		const participant1Id = match.opponent1.id;
+		const participant2Id = match.opponent2.id;
+
+		// Determine which opponent won
+		const winnerPosition = participant1Id === winnerId ? 1 : 2;
+		const loserPosition = winnerPosition === 1 ? 2 : 1;
+
+		const winner = this._getOpponentAtPosition(match, winnerPosition);
+		const loser = this._getOpponentAtPosition(match, loserPosition);
+
+		// Mark match results
+		this._setOpponentResult(winner, 'W');
+		this._setOpponentResult(loser, 'L');
+		match.status = 4; // Completed
+
+		// Advance winner to next round
+		if (match.next_match_id) {
+			const nextMatch = this.bracketData.matches.find((m) => m.id === match.next_match_id);
+			if (nextMatch) {
+				// Determine position in next match based on connection metadata
+				const connection = match.metadata?.connection;
+				const targetPosition = connection ? connection.toPosition : match.number % 2 === 1 ? 0 : 1;
+
+				const winnerOpponent = {
+					id: winnerId,
+					position: targetPosition,
+					result: undefined,
+					score: undefined,
+				};
+
+				if (targetPosition === 0) {
+					nextMatch.opponent1 = winnerOpponent;
+				} else {
+					nextMatch.opponent2 = winnerOpponent;
+				}
+			}
+		}
+
+		// Save and re-render
+		this.saveToLocalStorage();
+		this.renderBracket();
 	}
 
 	attachDragAndDrop() {

@@ -1,5 +1,9 @@
 Given('I am on the root page') do
   visit '/'
+  if page.driver.is_a?(Capybara::Selenium::Driver)
+    page.execute_script('if (typeof localStorage !== "undefined") localStorage.clear();')
+    sleep(0.2)
+  end
   expect(page).to have_content('Bracketmaker')
 end
 
