@@ -72,19 +72,17 @@ class BracketManager {
 		const numParticipants = participants.length;
 		const numRounds = Math.log2(numParticipants);
 
-		const participantList = participants
-			.map((name, index) => {
-				if (name && name !== 'null') {  // Check for both null and string 'null'
-					return {
-						id: index + 1,
-						tournament_id: 1,
-						name: name,
-					};
-				}
-				return null;
-			})
-			.filter((p) => p !== null);
-
+		// Create participant list with sequential IDs based on original index
+		const participantList = [];
+		participants.forEach((name, index) => {
+			if (name && name !== 'null' && name !== '') {
+				participantList.push({
+					id: index + 1,  // Use original index + 1 as ID to maintain position
+					tournament_id: 1,
+					name: name,
+				});
+			}
+		});
 
 		const matches = [];
 		let matchId = 1;
@@ -113,21 +111,21 @@ class BracketManager {
 					const p1Index = i * 2;
 					const p2Index = i * 2 + 1;
 
-					if (participants[p1Index]) {
+					// Find participant by array index
+					const p1Name = participants[p1Index];
+					const p2Name = participants[p2Index];
+
+					if (p1Name && p1Name !== 'null') {
+						// Use the index + 1 as the ID (matching participantList)
 						match.opponent1 = {
 							id: p1Index + 1,
-							position: 0,
-							score: null,
-							result: null,
 						};
 					}
 
-					if (participants[p2Index]) {
+					if (p2Name && p2Name !== 'null') {
+						// Use the index + 1 as the ID (matching participantList)
 						match.opponent2 = {
 							id: p2Index + 1,
-							position: 1,
-							score: null,
-							result: null,
 						};
 					}
 				} else {
@@ -145,6 +143,7 @@ class BracketManager {
 			roundNumber++;
 		}
 
+		// Link matches to next rounds
 		for (let roundIdx = 0; roundIdx < matchesPerRound.length - 1; roundIdx++) {
 			const currentRound = matchesPerRound[roundIdx];
 			const nextRound = matchesPerRound[roundIdx + 1];
@@ -506,11 +505,10 @@ class BracketManager {
 		{
   			this.bracketData.stages.forEach(function(row) {
 				let line = Object.values(row).map(item => {
-    				// Check if the item is an object and not null or an array
     				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-    				    return JSON.stringify(item); // Stringify the object
+    				    return JSON.stringify(item);
     				}
-    				return item; // Return other types as is
+    				return item;
 				}).join(',');
   			  	csvContent += line + '\r\n';
   			});
@@ -525,11 +523,10 @@ class BracketManager {
 		{
   			this.bracketData.matches.forEach(function(row) {
 				let line = Object.values(row).map(item => {
-    				// Check if the item is an object and not null or an array
     				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-    				    return JSON.stringify(item); // Stringify the object
+    				    return JSON.stringify(item);
     				}
-    				return item; // Return other types as is
+    				return item;
 				}).join(',');
   				csvContent += line + '\r\n';
   			});
@@ -547,11 +544,10 @@ class BracketManager {
 		{
   			this.bracketData.matchGames.forEach(function(row) {
   			  	let line = Object.values(row).map(item => {
-    				// Check if the item is an object and not null or an array
     				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-    				    return JSON.stringify(item); // Stringify the object
+    				    return JSON.stringify(item);
     				}
-    				return item; // Return other types as is
+    				return item;
 				}).join(',');
   			  	csvContent += line + '\r\n';
   			});
@@ -566,26 +562,24 @@ class BracketManager {
 		{
   			this.bracketData.participants.forEach(function(row) {
 				let line = Object.values(row).map(item => {
-    				// Check if the item is an object and not null or an array
     				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-    				    return JSON.stringify(item); // Stringify the object
+    				    return JSON.stringify(item);
     				}
-    				return item; // Return other types as is
+    				return item;
 				}).join(',');
   			 	csvContent += line + '\r\n';
   			});
 		}
 
-  		// Use the data URI scheme with proper encoding and a Byte Order Mark (BOM) for Excel compatibility
   		const encodedUri = encodeURI("data:text/csv;charset=utf-8,\uFEFF" + csvContent);
   		const link = document.createElement("a");
 
   		link.setAttribute("href", encodedUri);
-  		link.setAttribute("download", "tournament.csv"); // The 'download' attribute sets the file name
-  		document.body.appendChild(link); // Required for Firefox
+  		link.setAttribute("download", "tournament.csv");
+  		document.body.appendChild(link);
 
-  		link.click(); // Simulate a click to trigger download
-  		document.body.removeChild(link); // Clean up the DOM
+  		link.click();
+  		document.body.removeChild(link);
 	}
 
 	/**
@@ -648,11 +642,18 @@ class BracketManager {
   		if (file) {
 			console.log(this.bracketData);
 
+			if (!this.bracketData) {
+				this.bracketData = {
+					stages: [],
+					matches: [],
+					matchGames: [],
+					participants: []
+				};
+			}
+
 			const reader = new FileReader();
 			reader.onload = (e) => {
 				const text = e.target.result;
-					// You can process the CSV string here
-					// Example basic processing: split into lines and then values
 				const lines = text.split('\r\n');
     			const headers = lines[0].split(',');
 
@@ -687,7 +688,6 @@ class BracketManager {
 						  {
     						let currentline = lines[i].split(',');
 
-    						// Ensure the line has the same number of fields as  headers
 							let obj = {};
     						for (let j = 0; j < headers.length; j++) {
     							try {
@@ -709,7 +709,6 @@ class BracketManager {
 						  {
     						let currentline = this.splitMixedString(lines[i]);
 
-    						// Ensure the line has the same number of fields as headers
 							let obj = {};
     						for (let j = 0, k = j; j < headers.length; j++, k++) {
 								let data = currentline[k];
@@ -744,7 +743,6 @@ class BracketManager {
 						  {
     						let currentline = lines[i].split(',');
 
-    						// Ensure the line has the same number of fields as headers
     						if (currentline.length === headers.length) {
 								let obj = {};
     						    for (let j = 0; j < headers.length; j++) {
@@ -769,7 +767,6 @@ class BracketManager {
 						  console.log("_*participants*_123");
     						const currentline = lines[i].split(',');
 
-    						// Ensure the line has the same number of fields as headers
 								let obj = {};
     						    for (let j = 0; j < headers.length; j++) {
     								try {
