@@ -1,5 +1,6 @@
 <script src="/javascripts/bracket_manager.js"></script>
 <script src="/javascripts/competitor_edit_delete.js"></script>
+<script src="/javascripts/add_competitors.js"></script>
 
 <div class="h-full flex flex-col p-6">
   <!-- Empty State (shown when no bracket exists) -->
@@ -30,7 +31,19 @@
           <p class="text-sm text-muted-foreground">Drag competitors to organize your bracket</p>
         </div>
       </div>
-      <div class="flex gap-3">
+      <div style="display: flex; gap: 12px;">
+        <!-- ADD COMPETITORS BUTTON - GREEN -->
+        <button 
+          onclick="window.bracketManager.showAddCompetitorsModal()" 
+          style="padding: 8px 16px; background-color: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer;"
+          onmouseover="this.style.backgroundColor='#15803d'"
+          onmouseout="this.style.backgroundColor='#16a34a'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Add Competitors
+        </button>
         <button 
           onclick="validateBracket()" 
           class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium"

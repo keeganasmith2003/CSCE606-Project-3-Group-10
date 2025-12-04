@@ -319,18 +319,18 @@ if (typeof BracketManager !== 'undefined') {
 	};
 
 	// Update the renderBracket method to add controls after rendering
-	const originalRenderBracket = BracketManager.prototype.renderBracket;
-	BracketManager.prototype.renderBracket = function() {
-		console.log('renderBracket called, isDraftMode:', this.isDraftMode);
+	// const originalRenderBracket = BracketManager.prototype.renderBracket;
+	// BracketManager.prototype.renderBracket = function() {
+	// 	console.log('renderBracket called, isDraftMode:', this.isDraftMode);
 		
-		originalRenderBracket.call(this);
+	// 	originalRenderBracket.call(this);
 
-		if (this.isDraftMode) {
-			setTimeout(() => {
-				this.addCompetitorControls();
-			}, 700); // Add controls AFTER drag-and-drop is set up
-		}
-	};
+	// 	if (this.isDraftMode) {
+	// 		setTimeout(() => {
+	// 			this.addCompetitorControls();
+	// 		}, 700); // Add controls AFTER drag-and-drop is set up
+	// 	}
+	// };
 
 	console.log('BracketManager extended with edit/delete functionality');
 }
