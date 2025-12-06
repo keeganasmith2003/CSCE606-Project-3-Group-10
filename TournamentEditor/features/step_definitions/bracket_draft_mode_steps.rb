@@ -176,7 +176,19 @@ end
 
 When('I refresh the page') do
   visit current_path
-  sleep(1.5)
+  expect(page).to have_content('Bracketmaker', wait: 10)
+  page.execute_script('
+    return new Promise((resolve) => {
+      if (document.readyState === "complete") {
+        setTimeout(resolve, 500);
+      } else {
+        window.addEventListener("load", function() {
+          setTimeout(resolve, 500);
+        });
+      }
+    });
+  ')
+  sleep(2.0)
 end
 
 Then('the bracket should be loaded from local storage') do

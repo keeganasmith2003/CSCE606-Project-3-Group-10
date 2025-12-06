@@ -60,6 +60,8 @@ group :test do
   gem 'database_cleaner-active_record', '~> 2.1'
   # Cucumber for BDD feature tests
   gem 'cucumber-rails', '~> 3.0', require: false
+  # Code coverage for feature tests
+  gem 'simplecov', '~> 0.22', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

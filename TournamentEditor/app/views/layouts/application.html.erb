@@ -8,9 +8,6 @@
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     
-    <!-- brackets-viewer.js CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/brackets-viewer@latest/dist/brackets-viewer.min.css" />
-    
     <!-- Load application JavaScript in head to ensure proper initialization order -->
     <script type="text/javascript" src="/javascripts/tournament_state.js"></script>
   </head>
@@ -25,7 +22,7 @@
     </div>
     
     <!-- Load brackets-viewer.js and bracket_manager.js at end of body -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brackets-viewer@latest/dist/brackets-viewer.min.js"></script>
+    <script type="text/javascript" src="/javascripts/brackets_viewer.js"></script>
     <script type="text/javascript" src="/javascripts/bracket_manager.js"></script>
   </body>
 </html>

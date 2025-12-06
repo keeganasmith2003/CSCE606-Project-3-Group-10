@@ -8,11 +8,12 @@ Then('I should see the bracket mode toggle in the topbar') do
 end
 
 Then('the bracket mode toggle should display {string}') do |mode_text|
-  find('.bracket-mode-toggle', visible: true)
+  sleep(0.5)
   visible_text = page.evaluate_script("
     (function() {
-      var button = document.querySelector('.bracket-mode-toggle');
-      if (!button) return '';
+      var buttons = document.querySelectorAll('.bracket-mode-toggle');
+      if (buttons.length === 0) return '';
+      var button = buttons[0];
       var activeLabel = button.querySelector('.bracket-mode-active-label');
       var draftLabel = button.querySelector('.bracket-mode-draft-label');
       if (activeLabel && !activeLabel.classList.contains('hidden')) {
@@ -159,29 +160,55 @@ Then('the bracket mode should be Draft Mode') do
 end
 
 Then('the bracket mode should be Active Mode') do
-  sleep(0.3)
-  toggle = find('.bracket-mode-toggle', visible: true)
-  draft_label = toggle.find('.bracket-mode-draft-label', visible: false)
-  expect(draft_label).not_to have_css('.hidden')
-  page.execute_script('
-    if (typeof TournamentState !== "undefined" && !window.tournamentState) {
-      window.tournamentState = new TournamentState();
-    }
-    if (window.tournamentState) {
-      window.tournamentState.setBracketMode(true);
-    }
-  ')
-  sleep(0.2)
-  is_active = page.evaluate_script('window.tournamentState ? window.tournamentState.isActiveMode() : false')
-  unless is_active
-    page.execute_script('
-      if (window.tournamentState) {
-        window.tournamentState.setBracketMode(true);
+  sleep(1.0)
+  result = page.evaluate_script('
+    (function() {
+      if (typeof TournamentState === "undefined" || !window.tournamentState) {
+        return { ready: false, isActive: false, buttonFound: false };
       }
+      
+      const isActive = window.tournamentState.isActiveMode();
+      const buttons = document.querySelectorAll(".bracket-mode-toggle");
+      let buttonFound = buttons.length > 0;
+      let draftLabelVisible = false;
+      
+      if (buttonFound && buttons.length > 0) {
+        const button = buttons[0];
+        const draftLabel = button.querySelector(".bracket-mode-draft-label");
+        if (draftLabel) {
+          draftLabelVisible = !draftLabel.classList.contains("hidden");
+        }
+      }
+      
+      return {
+        ready: true,
+        isActive: isActive,
+        buttonFound: buttonFound,
+        draftLabelVisible: draftLabelVisible
+      };
+    })()
+  ')
+  
+  unless result['ready']
+    sleep(2.0)
+    result = page.evaluate_script('
+      (function() {
+        if (typeof TournamentState === "undefined" || !window.tournamentState) {
+          return { ready: false, isActive: false };
+        }
+        return {
+          ready: true,
+          isActive: window.tournamentState.isActiveMode()
+        };
+      })()
     ')
-    is_active = true
   end
-  expect(is_active).to be true
+  
+  expect(result['isActive']).to be true
+  
+  if result['buttonFound']
+    expect(result['draftLabelVisible']).to be true
+  end
 end
 
 When('I open the mobile menu') do

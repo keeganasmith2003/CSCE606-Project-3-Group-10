@@ -31,3 +31,10 @@ Feature: Bracket Mode Toggle
     When I open the mobile menu
     Then I should see the bracket mode toggle in the mobile menu
 
+  @javascript
+  Scenario: Bracket mode persists after refresh
+    Given I am on the root page
+    And the bracket mode is in Active Mode
+    When I refresh the page
+    Then the bracket mode should be Active Mode
+    And the bracket mode toggle should display "Draft Mode"

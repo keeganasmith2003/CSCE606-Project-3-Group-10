@@ -1,2 +1,0 @@
-class Competitor < ApplicationRecord
-end

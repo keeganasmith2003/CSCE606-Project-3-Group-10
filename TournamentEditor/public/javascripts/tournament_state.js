@@ -1,43 +1,48 @@
-/**
- * TournamentState - Manages the bracket mode state
- *
- * Tracks bracketMode: Boolean (true = Active, false = Draft)
- */
 class TournamentState {
 	constructor() {
-		this.bracketMode = false;
+		this.bracketMode = this._loadBracketModeFromStorage();
 	}
 
-	/**
-	 * Set the bracket mode
-	 * @param {boolean} isActive - true for Active mode, false for Draft mode
-	 */
 	setBracketMode(isActive) {
 		this.bracketMode = isActive;
+		this._saveBracketModeToStorage(isActive);
 		this._notifyChange('bracketMode');
 	}
 
-	/**
-	 * Get the current bracket mode
-	 * @returns {boolean} true if Active mode, false if Draft mode
-	 */
+	_saveBracketModeToStorage(isActive) {
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('tournament_bracket_mode', isActive ? 'active' : 'draft');
+		}
+	}
+
+	_loadBracketModeFromStorage() {
+		if (typeof localStorage !== 'undefined') {
+			const stored = localStorage.getItem('tournament_bracket_mode');
+			if (stored === 'active') {
+				return true;
+			} else if (stored === 'draft') {
+				return false;
+			}
+		}
+		// Default to Draft mode if nothing stored
+		return false;
+	}
+
 	isActiveMode() {
 		return this.bracketMode;
 	}
 
-	/**
-	 * Get the current bracket mode as string
-	 * @returns {string} 'active' or 'draft'
-	 */
 	getBracketModeString() {
 		return this.bracketMode ? 'active' : 'draft';
 	}
 
-	/**
-	 * Notify listeners of state changes
-	 * @private
-	 * @param {string} changeType - Type of change that occurred
-	 */
+	getDraftBracket() {
+		if (typeof window !== 'undefined' && window.bracketManager) {
+			return window.bracketManager.bracketData;
+		}
+		return null;
+	}
+
 	_notifyChange(changeType) {
 		if (typeof window !== 'undefined' && window.dispatchEvent) {
 			window.dispatchEvent(

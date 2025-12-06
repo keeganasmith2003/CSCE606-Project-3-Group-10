@@ -4,6 +4,10 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
+# SimpleCov must be required and started BEFORE any other code is loaded
+# This ensures it tracks coverage for all code executed during tests
+require 'simplecov'
+SimpleCov.start 'rails'
 
 require 'cucumber/rails'
 

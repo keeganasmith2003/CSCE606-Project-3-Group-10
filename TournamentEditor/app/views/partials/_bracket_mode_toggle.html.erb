@@ -26,30 +26,40 @@
     }
     
     // Update button appearance and state based on current mode
-    function updateBracketModeUI(isActive) {
-      const button = document.getElementById('bracket-mode-toggle');
-      const activeLabel = button.querySelector('.bracket-mode-active-label');
-      const draftLabel = button.querySelector('.bracket-mode-draft-label');
+    function updateBracketModeUI(isActive, saveToStorage) {
+      // Update all toggle buttons (desktop and mobile)
+      const buttons = document.querySelectorAll('.bracket-mode-toggle');
+      if (buttons.length === 0) return;
       
-      if (isActive) {
-        // Active mode: show Draft label, use primary styling
-        button.className = 'bracket-mode-toggle px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
-        activeLabel.classList.add('hidden');
-        draftLabel.classList.remove('hidden');
-        button.setAttribute('title', 'Switch to Draft Mode');
-        button.setAttribute('aria-label', 'Switch to Draft Mode');
-      } else {
-        // Draft mode: show Active label, use secondary styling
-        button.className = 'bracket-mode-toggle px-4 py-2 bg-secondary text-secondary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
-        activeLabel.classList.remove('hidden');
-        draftLabel.classList.add('hidden');
-        button.setAttribute('title', 'Switch to Active Mode');
-        button.setAttribute('aria-label', 'Switch to Active Mode');
-      }
+      buttons.forEach(function(button) {
+        const activeLabel = button.querySelector('.bracket-mode-active-label');
+        const draftLabel = button.querySelector('.bracket-mode-draft-label');
+        
+        if (isActive) {
+          // Active mode: show Draft label, use primary styling
+          button.className = 'bracket-mode-toggle px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
+          activeLabel.classList.add('hidden');
+          draftLabel.classList.remove('hidden');
+          button.setAttribute('title', 'Switch to Draft Mode');
+          button.setAttribute('aria-label', 'Switch to Draft Mode');
+        } else {
+          // Draft mode: show Active label, use secondary styling
+          button.className = 'bracket-mode-toggle px-4 py-2 bg-secondary text-secondary-foreground rounded-md font-medium transition-opacity hover:opacity-90 text-nowrap overflow-hidden text-ellipsis whitespace-nowrap';
+          activeLabel.classList.remove('hidden');
+          draftLabel.classList.add('hidden');
+          button.setAttribute('title', 'Switch to Active Mode');
+          button.setAttribute('aria-label', 'Switch to Active Mode');
+        }
+      });
       
-      // Update TournamentState if available
+      // Update TournamentState if available (saveToStorage defaults to true for user actions)
       if (typeof TournamentState !== 'undefined' && window.tournamentState) {
-        window.tournamentState.setBracketMode(isActive);
+        if (saveToStorage !== false) {
+          window.tournamentState.setBracketMode(isActive);
+        } else {
+          // Just update the internal state without saving to localStorage (for initialization)
+          window.tournamentState.bracketMode = isActive;
+        }
       }
     }
     
@@ -68,17 +78,32 @@
             currentMode = button.classList.contains('bg-primary');
           }
           
-          // Toggle mode
+          // Toggle mode (save to localStorage)
           const newMode = !currentMode;
-          updateBracketModeUI(newMode);
+          updateBracketModeUI(newMode, true);
         }
       });
       
-      // Initialize UI on page load (default to Draft mode)
-      const initialMode = (typeof TournamentState !== 'undefined' && window.tournamentState) 
-        ? window.tournamentState.isActiveMode() 
-        : false;
-      updateBracketModeUI(initialMode);
+      // Initialize UI on page load from TournamentState (which loads from localStorage)
+      // Wait a bit to ensure TournamentState is fully initialized
+      function initializeUI() {
+        const initialMode = (typeof TournamentState !== 'undefined' && window.tournamentState) 
+          ? window.tournamentState.isActiveMode() 
+          : false;
+        // Don't save to localStorage during initialization (pass false)
+        updateBracketModeUI(initialMode, false);
+      }
+      
+      // Try immediately, and also on DOMContentLoaded if needed
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Small delay to ensure TournamentState is initialized
+          setTimeout(initializeUI, 0);
+        });
+      } else {
+        // Small delay to ensure TournamentState is initialized
+        setTimeout(initializeUI, 0);
+      }
     }
     
     // Initialize when DOM is ready

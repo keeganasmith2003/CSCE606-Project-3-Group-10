@@ -20,6 +20,8 @@
 		--accent-foreground: 220.9 39.3% 11%;
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 210 20% 98%;
+		--success: 142 71% 45%;
+		--success-foreground: 210 20% 98%;
 		--border: 220 13% 91%;
 		--input: 220 13% 91%;
 		--ring: 262.1 83.3% 57.8%;
@@ -48,6 +50,8 @@
 		--accent-foreground: 210 20% 98%;
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 210 20% 98%;
+		--success: 142 60% 50%;
+		--success-foreground: 210 20% 98%;
 		--border: 215 27.9% 16.9%;
 		--input: 215 27.9% 16.9%;
 		--ring: 263.4 70% 50.4%;
@@ -61,6 +65,231 @@
 
 @layer components {
 	/* Custom Components */
+
+	.brackets-viewer {
+		--text-size: 12px;
+		--round-margin: 40px;
+		--match-width: 150px;
+		--match-horizontal-padding: 8px;
+		--match-vertical-padding: 6px;
+		--connector-border-width: 2px;
+		--match-border-width: 1px;
+		--match-border-radius: 0.3em;
+		--participant-image-size: 1em;
+		@apply font-sans bg-background text-foreground text-left flex flex-col items-start overflow-auto select-none mx-auto;
+		font-size: var(--text-size);
+		padding: 10px 50px;
+	}
+	.brackets-viewer:empty {
+		display: none;
+	}
+	.brackets-viewer *,
+	.brackets-viewer ::after,
+	.brackets-viewer ::before {
+		box-sizing: border-box;
+	}
+	.brackets-viewer h1,
+	.brackets-viewer h2,
+	.brackets-viewer h3 {
+		margin-bottom: 0.5em;
+		font-weight: 500;
+		line-height: 1.2;
+	}
+	.brackets-viewer h1 {
+		font-size: 2em;
+		margin-top: 30px;
+		margin-bottom: 20px;
+	}
+	.brackets-viewer h2 {
+		font-size: 1.7em;
+	}
+	.brackets-viewer h3 {
+		@apply text-center bg-secondary whitespace-nowrap overflow-hidden;
+		font-size: 1.1em;
+		padding: 10px 0px;
+		text-overflow: ellipsis;
+		width: var(--match-width);
+	}
+	.brackets-viewer .bracket h2 {
+		@apply text-muted-foreground;
+		font-size: 1.5em;
+	}
+	.brackets-viewer .bracket .rounds {
+		display: flex;
+	}
+	.brackets-viewer .bracket .rounds:not(:last-of-type) {
+		margin-bottom: 15px;
+	}
+	.brackets-viewer .bracket .rounds .round {
+		display: flex;
+		flex-direction: column;
+	}
+	.brackets-viewer .bracket .rounds .round:not(:last-of-type) {
+		margin-right: var(--round-margin);
+	}
+	.brackets-viewer .match {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		margin: 10px 0;
+		width: var(--match-width);
+		position: relative;
+	}
+	.brackets-viewer .match.connect-next::after {
+		@apply block absolute border-r border-border;
+		content: '';
+		right: calc(-1 * var(--round-margin) / 2);
+		width: calc(var(--round-margin) / 2);
+		height: 50%;
+		border-right-width: var(--connector-border-width);
+	}
+	.brackets-viewer .match.connect-next:nth-of-type(odd)::after {
+		@apply border-t border-border;
+		top: 50%;
+		border-top-width: var(--connector-border-width);
+	}
+	.brackets-viewer .match.connect-next:nth-of-type(even)::after {
+		@apply border-b border-border;
+		top: 0;
+		border-bottom-width: var(--connector-border-width);
+	}
+	.brackets-viewer .match.connect-next.straight::after {
+		@apply border-b border-border;
+		width: var(--round-margin);
+		right: calc(-1 * var(--round-margin));
+		top: 0;
+		border-bottom-width: var(--connector-border-width);
+		border-top: unset;
+		border-right: unset;
+	}
+	.brackets-viewer .opponents {
+		@apply w-full relative border border-border rounded bg-card;
+		border-width: var(--match-border-width);
+		border-radius: var(--match-border-radius);
+	}
+	.brackets-viewer .opponents:hover {
+		@apply border-ring;
+	}
+	.brackets-viewer .opponents.popover-selected {
+		@apply border-ring;
+	}
+	.brackets-viewer .opponents > span {
+		@apply absolute text-muted-foreground bg-background rounded;
+		top: -10px;
+		font-size: 0.8em;
+		padding: 0 5px;
+		border-radius: 3px;
+	}
+	.brackets-viewer .opponents > span:nth-of-type(1) {
+		left: 3px;
+	}
+	.brackets-viewer .opponents > span:nth-of-type(2) {
+		right: 3px;
+	}
+	.brackets-viewer .opponents.connect-previous::before {
+		@apply block absolute border-b border-border;
+		content: '';
+		left: calc(-1 * var(--round-margin) / 2);
+		width: calc(var(--round-margin) / 2);
+		height: 50%;
+		border-bottom-width: var(--connector-border-width);
+	}
+	.bracket:nth-of-type(2) .brackets-viewer .opponents.connect-previous .opponents.connect-previous.straight::before,
+	.bracket:nth-of-type(1) .brackets-viewer .opponents.connect-previous .opponents.connect-previous.straight::after {
+		border-left: unset;
+		left: var(--round-margin);
+		width: var(--round-margin);
+	}
+	.bracket:nth-of-type(1) .brackets-viewer .opponents.connect-previous.straight::before {
+		content: unset;
+	}
+	.bracket:nth-of-type(2) .brackets-viewer .opponents.connect-previous.straight::after {
+		content: unset;
+	}
+	.brackets-viewer .participant {
+		@apply flex justify-between bg-card;
+		padding: 2px var(--match-horizontal-padding);
+	}
+	.brackets-viewer .participant.hover {
+		@apply bg-secondary;
+	}
+	.brackets-viewer .participant:nth-of-type(1) {
+		border-bottom: none;
+		border-top-left-radius: var(--match-border-radius);
+		border-top-right-radius: var(--match-border-radius);
+		padding-top: var(--match-vertical-padding);
+	}
+	.brackets-viewer .participant:nth-of-type(2) {
+		border-top: none;
+		border-bottom-left-radius: var(--match-border-radius);
+		border-bottom-right-radius: var(--match-border-radius);
+		padding-bottom: var(--match-vertical-padding);
+	}
+	.brackets-viewer .participant .name {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 80%;
+	}
+	.brackets-viewer .participant .name.hint {
+		@apply text-muted-foreground;
+	}
+	.brackets-viewer .participant .name > img {
+		width: var(--participant-image-size);
+		height: var(--participant-image-size);
+		margin-right: 4px;
+		-o-object-fit: cover;
+		object-fit: cover;
+		border-radius: 4px;
+		vertical-align: middle;
+		position: relative;
+		bottom: 1px;
+	}
+	.brackets-viewer .participant .name > span {
+		@apply text-muted-foreground font-normal;
+		font-size: 0.9em;
+	}
+	.brackets-viewer .participant .result {
+		margin-left: 10px;
+		width: 15%;
+		text-align: center;
+	}
+	.brackets-viewer .participant.win .name {
+		font-weight: bold;
+	}
+	.brackets-viewer .participant.win .result {
+		@apply text-success;
+	}
+	.brackets-viewer .participant.loss .result {
+		@apply text-destructive;
+	}
+	.brackets-viewer [popover] {
+		padding: 0 14px 10px 14px;
+	}
+	.brackets-viewer [popover] h4 {
+		font-size: 1.1em;
+		margin-bottom: 24px;
+	}
+	.brackets-viewer [popover] .match:not(:last-of-type) {
+		margin-bottom: 20px;
+	}
+
+	/* Draft mode drag-and-drop enhancements */
+	#bracket-viewer.draft-mode .draggable-participant {
+		@apply cursor-grab transition-all duration-200;
+	}
+
+	#bracket-viewer.draft-mode .draggable-participant:hover {
+		@apply opacity-80 -translate-y-0.5;
+	}
+
+	#bracket-viewer.draft-mode .draggable-participant:active {
+		@apply cursor-grabbing;
+	}
+
+	#bracket-viewer .drag-over {
+		@apply bg-blue-500/10 border-blue-500/50;
+	}
 }
 
 @layer utilities {

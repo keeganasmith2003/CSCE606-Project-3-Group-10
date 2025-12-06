@@ -3,7 +3,6 @@
 <script src="/javascripts/add_competitors.js"></script>
 
 <div class="h-full flex flex-col p-6">
-  <!-- Empty State (shown when no bracket exists) -->
   <div id="bracket-empty-state" class="flex flex-col items-center justify-center h-full">
     <div class="text-center max-w-2xl">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-24 mx-auto text-muted-foreground mb-6">
@@ -16,10 +15,8 @@
     </div>
   </div>
 
-  <!-- Bracket Viewer Container (shown when bracket exists) -->
   <div id="bracket-viewer-container" class="h-full flex flex-col" style="display: none;">
-    <!-- Draft Mode Controls -->
-    <div id="draft-mode-controls" class="flex items-center justify-between mb-4 p-4 bg-card border border-border rounded-lg" style="display: none;">
+    <div id="draft-mode-controls" class="flex items-center justify-between mb-4 p-4 bg-card border border-border rounded-lg gap-4 flex-wrap" style="display: none;">
       <div class="flex items-center gap-2">
         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-primary">
@@ -31,18 +28,25 @@
           <p class="text-sm text-muted-foreground">Drag competitors to organize your bracket</p>
         </div>
       </div>
-      <div style="display: flex; gap: 12px;">
-        <!-- ADD COMPETITORS BUTTON - GREEN -->
+      
+      <div class="flex items-center gap-2">
+        <label for="competitor-count-input" class="text-sm font-medium text-foreground">Competitors:</label>
+        <input 
+          type="number" 
+          id="competitor-count-input" 
+          class="w-20 px-2 py-1 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          min="2"
+          max="64"
+          placeholder="8"
+        />
+      </div>
+      
+      <div class="flex gap-3 ml-auto">
         <button 
-          onclick="window.bracketManager.showAddCompetitorsModal()" 
-          style="padding: 8px 16px; background-color: #16a34a; color: white; border: none; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer;"
-          onmouseover="this.style.backgroundColor='#15803d'"
-          onmouseout="this.style.backgroundColor='#16a34a'"
+          onclick="resetBracket()" 
+          class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Add Competitors
+          Reset
         </button>
         <button 
           onclick="validateBracket()" 
@@ -59,42 +63,150 @@
       </div>
     </div>
 
-    <!-- Bracket Viewer -->
-    <div id="bracket-viewer" class="brackets-viewer flex-1 overflow-auto p-4 bg-card border border-border rounded-lg">
-      <!-- brackets-viewer.js will render bracket here -->
+    <div class="flex gap-4 flex-1">
+      <div id="bracket-viewer" class="brackets-viewer flex-1 overflow-auto p-4 bg-card border border-border rounded-lg">
+      </div>
+
+      <div id="competitor-list-container" class="w-64 flex-shrink-0 p-4 bg-card border border-border rounded-lg overflow-auto" style="display: none;">
+        <h3 class="font-semibold text-foreground mb-3">Competitors</h3>
+        <ul id="competitor-list" class="space-y-2">
+        </ul>
+      </div>
     </div>
   </div>
 </div>
 
-<style>
-  /* Tailwind-styled overrides for brackets-viewer */
-  #bracket-viewer {
-    --bracket-color: hsl(var(--border));
-    --bracket-bg: hsl(var(--card));
-    --participant-bg: hsl(var(--card));
-    --participant-border: hsl(var(--border));
-    --participant-text: hsl(var(--foreground));
-  }
+<!-- Winner Selection Dialog for Active Mode -->
+<dialog id="winner-selection-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 0.5rem; padding: 0; max-width: 28rem; width: 90%; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); z-index: 50;">
+  <div style="padding: 1.5rem;">
+    <!-- Header with X button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 600; color: hsl(var(--foreground)); margin: 0;">Select a Winner</h2>
+      <button id="winner-dialog-close-x" type="button" style="background: none; border: none; color: hsl(var(--muted-foreground)); cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem; transition: all 0.2s;" onmouseover="this.style.background='hsl(var(--secondary))'; this.style.color='hsl(var(--foreground))'" onmouseout="this.style.background='none'; this.style.color='hsl(var(--muted-foreground))'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+    </div>
 
-  /* Draft mode drag-and-drop styling */
-  #bracket-viewer.draft-mode .draggable-participant {
-    cursor: grab;
-    transition: all 0.2s ease;
-  }
+    <!-- Competitor Selection Buttons -->
+    <div style="display: flex; flex-direction: column; gap: 0; margin-bottom: 1.5rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; overflow: hidden;">
+      <!-- Competitor 1 Button -->
+      <button id="winner-dialog-competitor1-button" type="button" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: hsl(var(--card)); border: none; border-bottom: 1px solid hsl(var(--border)); cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;" onmouseover="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--secondary))'" onmouseout="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--card))'">
+        <span id="winner-dialog-competitor1-name" style="font-size: 1.125rem; font-weight: 500; color: hsl(var(--foreground));">Competitor 1</span>
+        <span class="winner-status" style="display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; font-weight: 600; font-size: 1rem; background: hsl(var(--success)); color: hsl(var(--success-foreground));">W</span>
+      </button>
 
-  #bracket-viewer.draft-mode .draggable-participant:hover {
-    opacity: 0.8;
-    transform: translateY(-2px);
-  }
+      <!-- Competitor 2 Button -->
+      <button id="winner-dialog-competitor2-button" type="button" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: hsl(var(--card)); border: none; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;" onmouseover="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--secondary))'" onmouseout="if (!this.classList.contains('selected-winner')) this.style.background='hsl(var(--card))'">
+        <span id="winner-dialog-competitor2-name" style="font-size: 1.125rem; font-weight: 500; color: hsl(var(--foreground));">Competitor 2</span>
+        <span class="winner-status" style="display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; font-weight: 600; font-size: 1rem; background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground));">L</span>
+      </button>
+    </div>
 
-  #bracket-viewer.draft-mode .draggable-participant:active {
-    cursor: grabbing;
-  }
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+      <button id="winner-dialog-cancel" type="button" style="padding: 0.625rem 1.25rem; background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Cancel</button>
+      <button id="winner-dialog-confirm" type="button" style="padding: 0.625rem 1.25rem; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Confirm</button>
+    </div>
+  </div>
+</dialog>
 
-  #bracket-viewer .drag-over {
-    background-color: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.5);
-  }
+<script>
+  // Winner Selection Dialog Logic
+  (function() {
+    const dialog = document.getElementById('winner-selection-dialog');
+    if (!dialog) return;
+
+    const comp1Button = document.getElementById('winner-dialog-competitor1-button');
+    const comp2Button = document.getElementById('winner-dialog-competitor2-button');
+    const confirmButton = document.getElementById('winner-dialog-confirm');
+    const cancelButton = document.getElementById('winner-dialog-cancel');
+    const closeXButton = document.getElementById('winner-dialog-close-x');
+
+    // Toggle winner selection
+    function selectWinnerUI(buttonElement, otherButtonElement) {
+      const status = buttonElement.querySelector('.winner-status');
+      const otherStatus = otherButtonElement.querySelector('.winner-status');
+      
+      if (buttonElement.classList.contains('selected-winner')) {
+        // Already selected, do nothing
+        return;
+      }
+
+      // Update selection
+      buttonElement.classList.add('selected-winner');
+      otherButtonElement.classList.remove('selected-winner');
+      
+      // Update this button to winner (W)
+      status.textContent = 'W';
+      status.style.background = 'hsl(var(--success))';
+      status.style.color = 'hsl(var(--success-foreground))';
+      buttonElement.style.background = 'hsl(var(--secondary))';
+      
+      // Update other button to loser (L)
+      otherStatus.textContent = 'L';
+      otherStatus.style.background = 'hsl(var(--destructive))';
+      otherStatus.style.color = 'hsl(var(--destructive-foreground))';
+      otherButtonElement.style.background = 'hsl(var(--card))';
+
+      // Update dialog data
+      if (buttonElement.id === 'winner-dialog-competitor1-button') {
+        dialog.dataset.selectedWinner = dialog.dataset.comp1Id;
+      } else {
+        dialog.dataset.selectedWinner = dialog.dataset.comp2Id;
+      }
+    }
+
+    // Competitor button click handlers
+    if (comp1Button) {
+      comp1Button.addEventListener('click', function() {
+        selectWinnerUI(comp1Button, comp2Button);
+      });
+    }
+
+    if (comp2Button) {
+      comp2Button.addEventListener('click', function() {
+        selectWinnerUI(comp2Button, comp1Button);
+      });
+    }
+
+    // Confirm button handler
+    if (confirmButton) {
+      confirmButton.addEventListener('click', function() {
+        const matchId = parseInt(dialog.dataset.matchId);
+        const winnerId = parseInt(dialog.dataset.selectedWinner);
+        
+        if (window.bracketManager && matchId && winnerId) {
+          window.bracketManager.selectWinner(matchId, winnerId);
+        }
+        
+        dialog.close();
+      });
+    }
+
+    // Cancel and X button handlers
+    function closeDialog() {
+      dialog.close();
+    }
+
+    if (cancelButton) {
+      cancelButton.addEventListener('click', closeDialog);
+    }
+
+    if (closeXButton) {
+      closeXButton.addEventListener('click', closeDialog);
+    }
+
+    // Close on backdrop click
+    dialog.addEventListener('click', function(e) {
+      if (e.target === dialog) {
+        closeDialog();
+      }
+    });
+  })();
+</script>
 
   /* Participant controls styling */
   .participant {
