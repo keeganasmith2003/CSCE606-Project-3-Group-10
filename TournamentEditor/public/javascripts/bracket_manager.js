@@ -291,6 +291,20 @@ class BracketManager {
 			renderConfig.onMatchClick = (match) => this.handleMatchClick(match);
 		}
 
+		// CRITICAL FIX: Wait longer for brackets-viewer to finish rendering
+		if (this.isDraftMode) {
+			setTimeout(() => {
+				this.addMatchIdsToDOM();
+				this.attachDragAndDrop();
+				// Also add competitor controls if the method exists
+				if (this.addCompetitorControls) {
+					this.addCompetitorControls();
+				}
+				console.log('Draft mode features initialized');
+			}, 500); // Increased from 300ms to 500ms
+		}
+
+
 		window.bracketsViewer.render(this.bracketData, renderConfig);
 		setTimeout(() => {
 			if (this.isDraftMode) {
@@ -1464,6 +1478,7 @@ class BracketManager {
 			localStorage.setItem('tournament_bracket_state', JSON.stringify(state));
 		}
 	}
+	
 /**Collapse commentComment on line R483DJPetika commented on Dec 6, 2025 DJPetikaon Dec 6, 2025MemberMore actionsshouldn't have deleted thisReactWrite a replyCode has comments. Press enter to view.
 	 * Save bracket state to CSV
 	 */
