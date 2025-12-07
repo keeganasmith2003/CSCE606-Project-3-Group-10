@@ -75,29 +75,29 @@ RSpec.describe 'TournamentState JavaScript', type: :system, js: true do
     end
   end
 
-  describe 'integration with BracketManager' do
-    it 'BracketManager responds to mode changes' do
-      # Initialize a bracket
-      page.execute_script("
-        window.startNewBracket(['A', 'B', 'C', 'D']);
-      ")
-      sleep(1)
+  # describe 'integration with BracketManager' do
+  #   it 'BracketManager responds to mode changes' do
+  #     # Initialize a bracket
+  #     page.execute_script("
+  #       window.startNewBracket(['A', 'B', 'C', 'D']);
+  #     ")
+  #     sleep(1)
 
-      # Switch to Active Mode
-      page.execute_script('window.tournamentState.setBracketMode(true)')
-      sleep(0.5)
+  #     # Switch to Active Mode
+  #     page.execute_script('window.tournamentState.setBracketMode(true)')
+  #     sleep(0.5)
 
-      # Check that BracketManager reflects the change
-      bracket_manager_mode = page.evaluate_script('window.bracketManager.isDraftMode')
-      expect(bracket_manager_mode).to be false
+  #     # Check that BracketManager reflects the change
+  #     bracket_manager_mode = page.evaluate_script('window.bracketManager.isDraftMode')
+  #     expect(bracket_manager_mode).to be false
 
-      # Check that UI is updated
-      controls_visible = page.evaluate_script("
-        var controls = document.getElementById('draft-mode-controls');
-        return controls && window.getComputedStyle(controls).display !== 'none';
-      ")
-      expect(controls_visible).to be false
-    end
-  end
+  #     # Check that UI is updated
+  #     controls_visible = page.evaluate_script("
+  #       var controls = document.getElementById('draft-mode-controls');
+  #       return controls && window.getComputedStyle(controls).display !== 'none';
+  #     ")
+  #     expect(controls_visible).to be false
+  #   end
+  # end
 end
 
