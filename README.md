@@ -81,6 +81,12 @@ bundle install
 yarn install
 ```
 
+4. Build TailwindCSS asset file:
+
+```bash
+bundle exec rails tailwindcss:build
+```
+
 ### Database Setup
 
 1. Create and migrate the database:
