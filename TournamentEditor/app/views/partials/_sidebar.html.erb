@@ -66,7 +66,7 @@
     }
     
     const num = parseInt(numCompetitors, 10);
-    
+    document.getElementById("competitor-count").textContent = `Competitors Selected: ${num}`;
     if (isNaN(num) || num < 2) {
       alert('Please enter a valid number of competitors (minimum 2)');
       return;
